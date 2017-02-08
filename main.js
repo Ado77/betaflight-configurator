@@ -1,5 +1,18 @@
 'use strict';
 
+function getManifest(){
+    return {
+        version: 1
+    };
+}
+
+function getFromStore(key, cb) {
+    //chrome.storage.local.1get
+    var data = {};
+    data[key] = localStorage.getItem(key);
+    return cb.call(this, data);
+}
+
 $(document).ready(function () {
     // translate to user-selected language
     localize();
@@ -7,10 +20,10 @@ $(document).ready(function () {
     // alternative - window.navigator.appVersion.match(/Chrome\/([0-9.]*)/)[1];
     GUI.log('Running - OS: <strong>' + GUI.operating_system + '</strong>, ' +
         'Chrome: <strong>' + window.navigator.appVersion.replace(/.*Chrome\/([0-9.]*).*/, "$1") + '</strong>, ' +
-        'Configurator: <strong>' + chrome.runtime.getManifest().version + '</strong>');
+        'Configurator: <strong>' + getManifest.version + '</strong>');
 
-    $('#status-bar .version').text(chrome.runtime.getManifest().version);
-    $('#logo .version').text(chrome.runtime.getManifest().version);
+    $('#status-bar .version').text(getManifest.version);
+    $('#logo .version').text(getManifest.version);
 
     // notification messages for various operating systems
     switch (GUI.operating_system) {
@@ -29,7 +42,7 @@ $(document).ready(function () {
 
     // check for newer releases online to inform people in case they are running an old release
 
-    chrome.storage.local.get(['lastVersionChecked', 'lastVersionAvailableOnline'], function (result) {
+    getFromStore(['lastVersionChecked', 'lastVersionAvailableOnline'], function (result) {
         if (typeof result.lastVersionChecked === undefined || ($.now() - result.lastVersionChecked) > 3600 * 1000) {
             try {
                 var url = 'https://api.github.com/repos/betaflight/betaflight-configurator/tags';
@@ -57,7 +70,7 @@ $(document).ready(function () {
         }
     });
 
-    chrome.storage.local.get('logopen', function (result) {
+    getFromStore('logopen', function (result) {
         if (result.logopen) {
             $("#showlog").trigger('click');
         }
@@ -205,7 +218,7 @@ $(document).ready(function () {
                 localize();
 
                 // if notifications are enabled, or wasn't set, check the notifications checkbox
-                chrome.storage.local.get('update_notify', function (result) {
+                getFromStore('update_notify', function (result) {
                     if (typeof result.update_notify === 'undefined' || result.update_notify) {
                         $('div.notifications input').prop('checked', true);
                     }
@@ -217,7 +230,7 @@ $(document).ready(function () {
                     });
                 });
 
-                chrome.storage.local.get('permanentExpertMode', function (result) {
+                getFromStore('permanentExpertMode', function (result) {
                     if (result.permanentExpertMode) {
                         $('div.permanentExpertMode input').prop('checked', true);
                     }
@@ -356,7 +369,7 @@ $(document).ready(function () {
         $(this).data('state', state);
     });
 
-    chrome.storage.local.get('permanentExpertMode', function (result) {
+    getFromStore('permanentExpertMode', function (result) {
         if (result.permanentExpertMode) {
             $('input[name="expertModeCheckbox"]').prop('checked', true);
         }
@@ -370,8 +383,8 @@ $(document).ready(function () {
 });
 
 function notifyOutdatedVersion(version) {
-    if (semver.lt(chrome.runtime.getManifest().version, version)) {
-        GUI.log('You are using an old version of ' + chrome.runtime.getManifest().name + '. Version ' + version + ' is available online with possible improvements and fixes.');
+    if (semver.lt(getManifest.version, version)) {
+        GUI.log('You are using an old version of ' + getManifest.name + '. Version ' + version + ' is available online with possible improvements and fixes.');
     }
 }
 

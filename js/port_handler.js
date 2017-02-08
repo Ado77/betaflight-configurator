@@ -1,5 +1,12 @@
 'use strict';
 
+     function getFromStore(key, cb) {
+        //chrome.storage.local.1get
+        var data = {};
+        data[key] = localStorage.getItem(key);
+        return cb.call(this, data);
+    }
+
 var usbDevices = {
     STM32DFU: {'vendorId': 1155, 'productId': 57105}
 };
@@ -63,7 +70,7 @@ PortHandler.check = function () {
 
             // auto-select last used port (only during initialization)
             if (!self.initial_ports) {
-                chrome.storage.local.get('last_used_port', function (result) {
+                getFromStore('last_used_port', function (result) {
                     // if last_used_port was set, we try to select it
                     if (result.last_used_port) {
                         current_ports.forEach(function(port) {
@@ -146,6 +153,7 @@ PortHandler.check = function () {
 };
 
 PortHandler.check_usb_devices = function (callback) {
+    return; //TODO
     chrome.usb.getDevices(usbDevices.STM32DFU, function (result) {
         if (result.length) {
             if (!$("div#port-picker #port [value='DFU']").length) {
