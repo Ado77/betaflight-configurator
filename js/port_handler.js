@@ -1,12 +1,5 @@
 'use strict';
 
-     function getFromStore(key, cb) {
-        //chrome.storage.local.1get
-        var data = {};
-        data[key] = localStorage.getItem(key);
-        return cb.call(this, data);
-    }
-
 var usbDevices = {
     STM32DFU: {'vendorId': 1155, 'productId': 57105}
 };

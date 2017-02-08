@@ -1,18 +1,5 @@
 'use strict';
 
-function getManifest(){
-    return {
-        version: 1
-    };
-}
-
-function getFromStore(key, cb) {
-    //chrome.storage.local.1get
-    var data = {};
-    data[key] = localStorage.getItem(key);
-    return cb.call(this, data);
-}
-
 $(document).ready(function () {
     // translate to user-selected language
     localize();
